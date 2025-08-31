@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { Badge } from './ui/badge'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import Link from 'next/link'
+import type { ScanSummary } from '@/lib/api'
 
 type Props = { owner: string; repo: string }
 export function InventorySummary({ owner, repo }: Props) {
-  const [data, setData] = useState<any | null>(null)
+  const [scan, setScan] = useState<ScanSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -17,21 +18,20 @@ export function InventorySummary({ owner, repo }: Props) {
       .then(({ ok, j }) => {
         if (!mounted) return
         if (!ok) setError(j.error || 'Failed to load')
-        else setData(j)
+        else setScan(j.scan)
       })
       .catch(e => mounted && setError(String(e)))
     return () => { mounted = false }
   }, [owner, repo])
 
   if (error) return <div className="card p-5">Error: {error}</div>
-  if (!data) return <div className="card p-5">Loading…</div>
+  if (!scan) return <div className="card p-5">Loading…</div>
 
-  const s = data.scan
-  const summary = s?.summary || {}
+  const summary = scan.summary
   const chart = [
-    { name: 'files', value: summary.files || 0 },
-    { name: 'dependencies', value: summary.dependencies || 0 },
-    { name: 'vulnerabilities', value: summary.vulns || 0 }
+    { name: 'files', value: summary.files ?? 0 },
+    { name: 'dependencies', value: summary.dependencies ?? 0 },
+    { name: 'vulnerabilities', value: summary.vulns ?? 0 }
   ]
 
   return (
@@ -39,7 +39,7 @@ export function InventorySummary({ owner, repo }: Props) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold">{owner}/{repo}</h3>
-          <p className="text-sm text-neutral-600">Scan #{s.id} • Status: <Badge>{s.status}</Badge></p>
+          <p className="text-sm text-neutral-600">Scan #{scan.id} • Status: <Badge>{scan.status}</Badge></p>
         </div>
         <Link href={`/repos/${owner}/${repo}`} className="btn">Open details</Link>
       </div>
