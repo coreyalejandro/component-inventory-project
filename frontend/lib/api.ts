@@ -1,5 +1,7 @@
 
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+if (!backendUrl) throw new Error('NEXT_PUBLIC_BACKEND_URL is not defined')
+export const BACKEND_URL = backendUrl
 
 // Server-side proxy helpers
 export async function enqueueScan(input: { owner: string; repo: string; gitRef?: string; jwt: string }) {

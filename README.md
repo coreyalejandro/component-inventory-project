@@ -135,7 +135,7 @@ CORS_ORIGIN=http://localhost:3001
 
 ```env
 # API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
 NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
 ```
 

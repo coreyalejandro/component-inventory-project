@@ -64,7 +64,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:3000
       NEXT_PUBLIC_GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
     ports:
       - "3001:3001"
