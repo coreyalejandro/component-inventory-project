@@ -240,6 +240,10 @@ The application includes comprehensive monitoring:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 📦 Releases & Distribution
+
+Archived build artifacts (e.g., .zip files) are not tracked in the repository. For distribution, attach archives to GitHub Releases or store them in an external service such as S3.
+
 ## 🆘 Support
 
 For support and questions:
