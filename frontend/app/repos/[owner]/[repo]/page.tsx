@@ -1,5 +1,5 @@
 
-import { getInventory } from '@/lib/api'
+import { getInventory, type ScanSummary } from '@/lib/api'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 export default async function RepoPage({ params }: { params: { owner: string; repo: string } }) {
@@ -7,8 +7,8 @@ export default async function RepoPage({ params }: { params: { owner: string; re
   if (!data) {
     return <div className="card p-5">No scans yet for {params.owner}/{params.repo}</div>
   }
-  const { scan } = data
-  const s = scan.summary || {}
+  const scan: ScanSummary = data.scan
+  const s = scan.summary
   return (
     <main className="space-y-6">
       <Card>

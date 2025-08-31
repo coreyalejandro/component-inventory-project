@@ -135,7 +135,7 @@ CORS_ORIGIN=http://localhost:3001
 
 ```env
 # API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
 NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
 ```
 
@@ -239,6 +239,10 @@ The application includes comprehensive monitoring:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📦 Releases & Distribution
+
+Archived build artifacts (e.g., .zip files) are not tracked in the repository. For distribution, attach archives to GitHub Releases or store them in an external service such as S3.
 
 ## 🆘 Support
 
