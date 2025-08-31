@@ -5,28 +5,27 @@ import authPlugin from '../src/auth.js';
 import { registerRepoRoutes } from '../src/routes/repos.js';
 
 describe('Repo routes', () => {
-  const cfg = {
-    NODE_ENV: 'test',
-    PORT: 3000,
-    BASE_URL: 'http://example.com',
-    JWT_SECRET: 'test-secret',
-    GITHUB_CLIENT_ID: 'id',
-    GITHUB_CLIENT_SECRET: 'secret',
-    GITHUB_OAUTH_CALLBACK_URL: 'http://example.com/callback',
-    DATABASE_URL: 'http://example.com/db',
-    REDIS_URL: 'http://example.com/redis',
-    LOG_LEVEL: 'info',
-  };
+process.env.NODE_ENV = 'test';
 
-  const app = Fastify();
+const cfg = {
+  NODE_ENV: 'test',
+  PORT: 3000,
+  BASE_URL: 'http://example.com',
+  JWT_SECRET: 'test-secret',
+  GITHUB_CLIENT_ID: 'id',
+  GITHUB_CLIENT_SECRET: 'secret',
+  GITHUB_OAUTH_CALLBACK_URL: 'http://example.com/callback',
+  DATABASE_URL: 'http://example.com/db',
+  REDIS_URL: 'http://example.com/redis',
+  LOG_LEVEL: 'info',
+};
 
-  beforeAll(async () => {
-    await app.register(swaggerPlugin);
-    await app.register(authPlugin, { cfg });
-    app.decorate('verifyServiceJwt', async (_req: any, _rep: any) => {});
-  });
+const app = Fastify();
 
-  // You can add your additional tests or route registrations here.
+beforeAll(async () => {
+  await app.register(swaggerPlugin);
+  await app.register(authPlugin, { cfg });
+  app.decorate('verifyServiceJwt', async (_req: any, _rep: any) => {});
 });
     app.decorate('scanQueue', { add: async ()=>({ id: 123 }) } as any)
     app.decorate('db', { query: async ()=>({ rows: [], rowCount: 0 }) } as any)
