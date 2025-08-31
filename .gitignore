@@ -4,3 +4,5 @@ dist
 .env
 sbom.json
 coverage
+
+*.zip
