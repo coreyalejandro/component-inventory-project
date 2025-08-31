@@ -2,10 +2,12 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
 import Fastify from 'fastify'
 import swaggerPlugin from '../src/plugins/swagger.js'
 
+// Mock implementation of Octokit
 vi.mock('octokit', () => {
   class MockOctokit {
     auth: string
     rest: { users: { getAuthenticated: () => Promise<{ data: { id: number, login: string } }> } }
+
     constructor(opts: any) {
       this.auth = opts.auth
       this.rest = {
@@ -14,6 +16,7 @@ vi.mock('octokit', () => {
         }
       }
     }
+
     async getAuthenticated() {
       if (this.auth === 'token1') {
         return { data: { id: 1, login: 'user1' } }
@@ -21,9 +24,11 @@ vi.mock('octokit', () => {
       return { data: { id: 2, login: 'user2' } }
     }
   }
+
   return { Octokit: MockOctokit }
 })
 
+// Import the auth plugin
 const authPlugin = (await import('../src/auth.js')).default
 
 function extractJwt(html: string): string {
@@ -44,12 +49,15 @@ describe('GitHub auth sub claim', () => {
     REDIS_URL: 'http://localhost/redis',
     LOG_LEVEL: 'info'
   }
+
   const app = Fastify()
+
   beforeAll(async () => {
     await app.register(swaggerPlugin)
     await app.register(authPlugin, { cfg })
     await app.ready()
   })
+
   afterAll(async () => { await app.close() })
 
   it('assigns distinct sub claims per GitHub user', async () => {
@@ -64,5 +72,7 @@ describe('GitHub auth sub claim', () => {
     expect(payload1.sub).toBeDefined()
     expect(payload2.sub).toBeDefined()
     expect(payload1.sub).not.toBe(payload2.sub)
+  })
+})
   })
 })
