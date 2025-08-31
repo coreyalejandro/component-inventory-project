@@ -2,6 +2,7 @@
 import fp from 'fastify-plugin'
 import fastifyJwt from '@fastify/jwt'
 import fastifyOauth2 from '@fastify/oauth2'
+import { Octokit } from 'octokit'
 import type { FastifyInstance } from 'fastify'
 import type { AppConfig } from './config.js'
 
@@ -12,7 +13,7 @@ declare module 'fastify' {
     }
   }
   interface FastifyRequest {
-    user?: { sub: string, role?: 'admin' | 'user' | 'read-only' }
+    user?: { sub: string, token?: string, role?: 'admin' | 'user' | 'read-only' }
   }
 }
 
@@ -51,8 +52,11 @@ export default fp(async function authPlugin(app: FastifyInstance, opts: { cfg: A
 
   app.get('/oauth/github/callback', async function (req, reply) {
     const token = await app.githubOAuth2.getAccessTokenFromAuthorizationCodeFlow(req)
+    const octokit = new Octokit({ auth: token.token.access_token })
+    const { data: ghUser } = await octokit.rest.users.getAuthenticated()
+    const sub = String(ghUser.id ?? ghUser.login)
     // In production: store token securely (KMS). Here we only return a session JWT with a token ref.
-    const jwt = app.jwt.sign({ sub: 'github-user', provider: 'github', scope: 'repo', token: token.token.access_token }, { expiresIn: '2h' })
+    const jwt = app.jwt.sign({ sub, provider: 'github', scope: 'repo', token: token.token.access_token }, { expiresIn: '2h' })
     reply.header('content-type', 'text/html')
     return reply.send(`<html><body><h1>GitHub Auth Complete</h1><p>Use this JWT for API calls:</p><pre>${jwt}</pre></body></html>`)
   })
