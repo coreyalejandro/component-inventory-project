@@ -1,5 +1,7 @@
 
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+if (!backendUrl) throw new Error('NEXT_PUBLIC_BACKEND_URL is not defined')
+export const BACKEND_URL = backendUrl
 
 // Server-side proxy helpers
 export async function enqueueScan(input: { owner: string; repo: string; gitRef?: string; jwt: string }) {
@@ -16,9 +18,23 @@ export async function enqueueScan(input: { owner: string; repo: string; gitRef?:
   return res.json() as Promise<{ scanId: number | string }>
 }
 
+export interface ScanSummary {
+  id: number
+  status: string
+  summary: {
+    files: number
+    dependencies: number
+    vulns: number
+    issues?: number
+    prs?: number
+  }
+  started_at: string
+  finished_at?: string
+}
+
 export async function getInventory(owner: string, repo: string) {
   const res = await fetch(`${BACKEND_URL}/v1/repos/${owner}/${repo}/inventory`, { cache: 'no-store' })
   if (res.status === 404) return null
   if (!res.ok) throw new Error(`inventory error ${res.status}`)
-  return res.json() as Promise<{ scan: { id: number; status: string; summary: any; started_at: string; finished_at?: string } }>
+  return res.json() as Promise<{ scan: ScanSummary }>
 }
